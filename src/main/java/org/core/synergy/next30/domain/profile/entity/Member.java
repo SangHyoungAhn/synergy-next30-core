@@ -3,6 +3,7 @@ package org.core.synergy.next30.domain.profile.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.core.synergy.next30.global.common.BaseTimeEntity;
+import org.core.synergy.next30.sync.infra.api.dto.employee.EmployeeData;
 
 @Entity
 @Getter
@@ -37,7 +38,6 @@ public class Member extends BaseTimeEntity {
 
     private String enrlFg;
 
-
     @OneToOne(mappedBy="member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private MemberDetail memberDetail;
 
@@ -45,8 +45,21 @@ public class Member extends BaseTimeEntity {
         this.memberDetail = memberDetail;
         // 무한 루프 방지 및 양방향 세팅
         if (memberDetail != null && memberDetail.getMember() != this) {
-            memberDetail.assignMember(this);
+            memberDetail.assignMember(this, null);
         }
+    }
+
+    public void updateInfo(EmployeeData data) {
+        this.empCd = data.getEmpCd();
+        this.korNm = data.getKorNm();
+        this.coCd = data.getCoCd();
+        this.deptCd = data.getDeptCd();
+        this.deptNm = data.getDeptNm();
+        this.hclsCd = data.getHclsCd();
+        this.hclsNm = data.getHclsNm();
+        this.hrspCd = data.getHrspCd();
+        this.hrspNm = data.getHrspNm();
+        this.enrlFg = data.getEnrlFg();
     }
 
 }

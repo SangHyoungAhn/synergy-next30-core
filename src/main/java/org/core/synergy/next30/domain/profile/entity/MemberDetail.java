@@ -3,6 +3,7 @@ package org.core.synergy.next30.domain.profile.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.core.synergy.next30.global.common.BaseTimeEntity;
+import org.core.synergy.next30.sync.infra.api.dto.employee.EmployeeData;
 
 @Entity
 @Getter
@@ -34,11 +35,17 @@ public class MemberDetail extends BaseTimeEntity {
     private String empKeywords;
 
     @Builder
-    public MemberDetail(Member member, String email, String telPhone, String profileImageUrl,
+    public MemberDetail(Member member, String beforeGeneratedTel, String profileImageUrl,
                         String empMbti, String empAsset, String empFocus, String empKeywords) {
         this.member = member;
-        this.email = email;
-        this.telPhone = telPhone;
+        // 이메일 결합
+        if(member != null){
+            this.loginId = member.getLoginId();
+            this.email = member.getLoginId() + "@donga.com";
+        }
+        // 전화번호 정제
+        this.telPhone = (beforeGeneratedTel != null) ? beforeGeneratedTel.replaceAll("[^0-9]","") : null;
+
         this.profileImageUrl = profileImageUrl;
         this.empMbti = empMbti;
         this.empAsset = empAsset;
@@ -47,7 +54,24 @@ public class MemberDetail extends BaseTimeEntity {
     }
 
     // 연관관계 편의 메서드 (Member에서 호출용)
-    public void assignMember(Member member) {
+    public void assignMember(Member member, String beforeGeneratedTel) {
         this.member = member;
+        this.loginId = member.getLoginId();
+        this.email = member.getLoginId() + "@donga.com";
+        this.telPhone = (beforeGeneratedTel != null) ? beforeGeneratedTel.replaceAll("[^0-9]","") : null;
+    }
+
+    public void updateFromApi(EmployeeData data) {
+        // 1. 전화번호 가공 (하이픈 제거)
+        if (data.getMobileTel() != null) {
+            this.telPhone = data.getMobileTel().replaceAll("-", "");
+        }
+        // 2. 이메일 가공 (이미 도메인이 있으면 그대로, 없으면 @donga.com 붙이기)
+        if (data.getEmailAddr() != null) {
+            String email = data.getEmailAddr();
+            this.email = email.contains("@") ? email : email + "@donga.com";
+        }
+        // 3. 기타 필드 업데이트 (필요한 경우)
+        this.profileImageUrl = data.getProfileImageUrl();
     }
 }

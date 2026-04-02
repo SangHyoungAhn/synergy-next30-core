@@ -29,26 +29,24 @@ public class MemberRepositoryTest {
         // given
         Member member = Member.builder()
                 .loginId("shahn0718")
-                .empCode("C019005")
-                .empName("안상형")
-                .compCode("1400")
-                .deptCode("C101225")
-                .deptName("비즈테크팀")
-                .posName("대리")
-                .posCode("EC3")
-                .dutyName("-")
-                .dutyCode("C10")
+                .empCd("C019005")
+                .korNm("안상형")
+                .coCd("1400")
+                .deptCd("C101225")
+                .deptNm("비즈테크팀")
+                .hrspNm("대리")
+                .hrspCd("EC3")
+                .hclsNm("-")
+                .hclsCd("C10")
                 .build();
 
         MemberDetail detail = MemberDetail.builder()
                 .member(member)
-                .email("shahn0718@donga.com")
-                .telPhone("01031984329")
                 .empMbti("INTJ")
                 .empAsset("JAVA SPRING")
                 .build();
         // when
-        member.setMemberDetail(detail);
+        member.assignDetail(detail);
         memberRepository.save(member);
 
         em.flush();
@@ -58,8 +56,8 @@ public class MemberRepositoryTest {
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
 
-        assertThat(savedMember.getEmpName()).isEqualTo("안상형");
-        assertThat(savedMember.getDeptName()).isEqualTo("비즈테크팀");
+        assertThat(savedMember.getKorNm()).isEqualTo("안상형");
+        assertThat(savedMember.getDeptNm()).isEqualTo("비즈테크팀");
 
         assertThat(savedMember.getMemberDetail()).isNotNull();
         assertThat(savedMember.getMemberDetail().getEmpMbti()).isEqualTo("INTJ");

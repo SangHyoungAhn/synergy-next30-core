@@ -22,8 +22,12 @@ public class GroupWareApiClient {
     private String baseUrl;
 
     public <T> T execute(String url, String accessToken, Object requestBody, Class<T> responseType) {
+
+        System.out.println("DEBUG - Final URL: " + baseUrl + url);
+        System.out.println("DEBUG - Current AccessToken: [" + accessToken + "]");
+
         String tId = UUID.randomUUID().toString().replaceAll("-", "");
-        String ts = String.valueOf(System.currentTimeMillis());
+        String ts = String.valueOf(System.currentTimeMillis() / 1000);
         String sign = groupWareAuthService.generateSign(accessToken,tId,ts,url);
 
         HttpHeaders headers = new HttpHeaders();
